@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f6f2">
+<meta name="description" content="研究発表やプレゼンの原稿を貼るだけ。発表時間の目安と、目標時間までの増減文字数がわかる無料ツール。登録不要。">
+<title>発表時間チェッカー | 原稿は何分？</title>
+<style>
+:root{font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",Meiryo,system-ui,sans-serif;color:#202822;background:#f7f6f2}
+*{box-sizing:border-box}body{margin:0}main{max-width:880px;margin:0 auto;padding:48px 22px 70px}
+header{border-bottom:1px solid #d9dcd4;padding-bottom:23px;margin-bottom:32px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;color:#47634e;margin:0 0 14px}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.25;letter-spacing:-.04em;margin:0 0 12px}
+.lead{color:#58615a;font-size:15px;line-height:1.9;margin:0}
+.panel{background:#fff;border:1px solid #e0e3dc;padding:25px;margin-bottom:16px}
+label{display:block;font-size:14px;font-weight:700;margin-bottom:10px}
+textarea{display:block;width:100%;min-height:230px;resize:vertical;padding:16px;font-size:16px;line-height:1.8;border:1px solid #aeb9af;border-radius:0;background:#fff;color:#1e2820}
+textarea:focus,input:focus,select:focus{outline:2px solid #427653;outline-offset:2px}
+.sub{font-size:12px;color:#637068;margin:10px 0 0}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+input,select{width:100%;height:45px;padding:0 12px;font-size:16px;border:1px solid #aeb9af;background:#fff;color:#202822;border-radius:0}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#dfe3da;border:1px solid #dfe3da;margin:18px 0}
+.metric{background:#fff;padding:22px 18px;min-width:0}
+.metric span{display:block;font-size:12px;color:#5b685f;margin-bottom:10px}
+.metric strong{font-size:clamp(23px,4vw,32px);font-weight:750;letter-spacing:-.04em}
+.status{padding:18px 20px;background:#edf4ed;border-left:4px solid #3f754e;line-height:1.8;font-size:14px;margin-bottom:18px}
+.status.over{background:#fff2e9;border-color:#bc693b}
+.status.neutral{background:#eef0ec;border-color:#788579}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+button{font:inherit;font-weight:700;cursor:pointer;border:1px solid #355b3f;padding:12px 18px;background:#355b3f;color:#fff}
+button.secondary{background:#fff;color:#355b3f}
+button:hover{filter:brightness(.94)}button:disabled{opacity:.45;cursor:not-allowed}
+.timer{font-size:clamp(48px,9vw,80px);font-variant-numeric:tabular-nums;font-weight:750;letter-spacing:-.05em;margin:5px 0 14px}
+.timer-note{font-size:13px;color:#667067;margin:0 0 18px}
+footer{font-size:12px;line-height:1.9;color:#667067;border-top:1px solid #d9dcd4;padding-top:24px}
+@media(max-width:560px){main{padding:27px 14px 50px}.panel{padding:18px}.controls{grid-template-columns:1fr}.metric{padding:17px 9px}.metric strong{font-size:23px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">PRESENTATION TOOL / 無料・登録不要</p>
+<h1>その原稿、何分かかる？</h1>
+<p class="lead">研究発表・ゼミ・授業のプレゼンに。原稿を貼るだけで、発表時間の目安と目標までの文字数がわかります。</p>
+</header>
+<section class="panel">
+<label for="script">① 発表原稿を貼り付ける</label>
+<textarea id="script" placeholder="ここに発表原稿を貼り付けてください。入力内容は外部に送信されません。"></textarea>
+<p class="sub">空白・改行を除いて文字数を計算します。実際の所要時間にはスライド切り替え・間・質疑応答は含みません。</p>
+</section>
+<section class="panel">
+<div class="controls">
+<div><label for="minutes">② 目標の発表時間（分）</label><input id="minutes" type="number" min="1" max="180" step="1" value="5"></div>
+<div><label for="speed">③ 話す速さ</label>
+<select id="speed">
+<option value="250">ゆっくり（250字/分）</option>
+<option value="300" selected>ふつう（300字/分）</option>
+<option value="350">やや速い（350字/分）</option>
+<option value="400">速い（400字/分）</option>
+</select></div>
+</div>
+<div class="results" aria-live="polite">
+<div class="metric"><span>原稿の文字数</span><strong id="characters">0</strong><span>文字</span></div>
+<div class="metric"><span>推定発表時間</span><strong id="estimate">0:00</strong><span>分 : 秒</span></div>
+<div class="metric"><span>目標との差</span><strong id="difference">—</strong><span id="difference-label">文字</span></div>
+</div>
+<div id="status" class="status neutral" role="status">原稿を入力すると、時間の目安が表示されます。</div>
+<div class="actions"><button id="sample" class="secondary" type="button">例文を入れる</button><button id="clear" class="secondary" type="button">原稿を消す</button></div>
+</section>
+<section class="panel">
+<label>④ 声に出して練習する</label>
+<div class="timer" id="timer" aria-live="off">00:00</div>
+<p class="timer-note">実際に話した時間を計れます。タブを切り替えても経過時間を基準に計測します。</p>
+<div class="actions">
+<button id="start" type="button">スタート</button>
+<button id="pause" class="secondary" type="button" disabled>一時停止</button>
+<button id="reset" class="secondary" type="button">リセット</button>
+</div>
+</section>
+<footer>
+<p>このツールは時間配分の目安を計算するもので、発表時間を保証するものではありません。話す速度は人や内容によって異なります。原稿はブラウザ内で処理され、サーバーには保存されません。</p>
+<p>気に入ったら、このページのURLを発表準備中の人に共有してください。</p>
+</footer>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const sample="本日は、土壌の水分条件が植物の成長に及ぼす影響について発表します。まず研究の背景を説明し、次に実験方法と結果を紹介します。最後に、得られた結果から考えられることをまとめます。今回の実験では、水分条件を変えた複数の区を用意し、一定期間にわたって生育の変化を記録しました。観察した項目は、草丈、葉の枚数、土壌水分などです。結果として、適切な水分条件では成長が進みましたが、水分が不足した区では生育が抑制される傾向が見られました。ただし、この結果だけで原因を断定することはできません。今後は測定回数を増やし、温度や光などの条件も考慮する必要があります。以上で発表を終わります。ご清聴ありがとうございました。";
+function fmt(sec){sec=Math.max(0,Math.round(sec));return `${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}`}
+function update(){
+ const count=Array.from($("script").value.replace(/\s/g,"")).length;
+ const rate=Number($("speed").value);
+ const target=Math.max(1,Math.min(180,Number($("minutes").value)||5));
+ const ideal=Math.round(target*rate);
+ const delta=ideal-count;
+ $("characters").textContent=count.toLocaleString("ja-JP");
+ $("estimate").textContent=fmt(count/rate*60);
+ $("difference").textContent=count?`${delta>0?"+":""}${delta.toLocaleString("ja-JP")}`:"—";
+ $("difference-label").textContent="文字（目標 − 現在）";
+ const s=$("status");s.className="status neutral";
+ if(!count){s.textContent="原稿を入力すると、時間の目安が表示されます。";return}
+ if(Math.abs(delta)<=rate*.15){s.textContent="目標時間に近い分量です。実際に声に出して、間やスライド切り替えも含めて確認しましょう。";return}
+ if(delta<0){s.className="status over";s.textContent=`目標より約${fmt(Math.abs(delta)/rate*60)}長い見込みです。${Math.abs(delta).toLocaleString("ja-JP")}文字ほど短くすると、目標に近づきます。`}
+ else{s.textContent=`目標より約${fmt(delta/rate*60)}短い見込みです。${delta.toLocaleString("ja-JP")}文字ほど追加する余裕があります。`}
+}
+["script","minutes","speed"].forEach(id=>$(id).addEventListener("input",update));
+$("sample").addEventListener("click",()=>{$("script").value=sample;update();$("script").focus()});
+$("clear").addEventListener("click",()=>{$("script").value="";update();$("script").focus()});
+let elapsed=0,startedAt=null,interval=null;
+function current(){return elapsed+(startedAt===null?0:Date.now()-startedAt)}
+function draw(){$("timer").textContent=fmt(Math.floor(current()/1000))}
+function buttons(){const running=startedAt!==null;$("start").disabled=running;$("pause").disabled=!running;$("start").textContent=elapsed>0?"再開":"スタート"}
+$("start").addEventListener("click",()=>{if(startedAt!==null)return;startedAt=Date.now();interval=setInterval(draw,200);buttons();draw()});
+$("pause").addEventListener("click",()=>{if(startedAt===null)return;elapsed=current();startedAt=null;clearInterval(interval);buttons();draw()});
+$("reset").addEventListener("click",()=>{startedAt=null;elapsed=0;clearInterval(interval);buttons();draw()});
+update();buttons();
+</script>
+</body>
+</html>
